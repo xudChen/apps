@@ -64,19 +64,27 @@ if(window.localStorage['isFirstTime']!=undefined && window.localStorage['isFirst
               isFirstTime = false;
           }
 */
-
-          
           $(function(){          	
-            DataBase.openDB('bcsphere',1,'apps',function(){
+            init();            
+			$(document).click(function(){
+			    $('.close_btn').css('display','none');
+			});
+          });
+          
+          function init(){
+	          DataBase.openDB('bcsphere',1,'apps',function(){
                 DataBase.query(function(result){
                     _apps_data_ = result;
                     var length = result.length;
-                    
 /*                     if(isFirstTime){                       */
-                       if(result.length==0){
-                          DataBase.insert({name:'温度计',address:'temperature.html',img:'img/temperature.png'});
-                          DataBase.insert({name:'调光灯',address:'rgblight.html',img:'img/rgblight.jpg'});
-                          DataBase.insert({name:'蜂鸣器',address:'buzzer.html',img:'img/buzzer.jpg'});     
+                       if(length==0){
+                          DataBase.insert({name:'温度计',address:'temperature.html',img:'img/temperature.png'},function(){
+	                      	DataBase.insert({name:'调光灯',address:'rgblight.html',img:'img/rgblight.jpg'},function(){
+		                  		DataBase.insert({name:'蜂鸣器',address:'buzzer.html',img:'img/buzzer.jpg'},function(){
+							  		init(); 
+							  	});    	
+	                      	});    
+                          });
                        }
 /* 					   window.localStorage['isFirstTime'] = !isFirstTime; */
 /*                     } */
@@ -136,11 +144,7 @@ if(window.localStorage['isFirstTime']!=undefined && window.localStorage['isFirst
             },function(error){
                 console.log(JSON.stringify(error));
             });
-            
-            $(document).click(function(){
-                $('.close_btn').css('display','none');
-            });
-          });
+          }          
       </script>
     </body> 
 </html>

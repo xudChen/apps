@@ -20,12 +20,6 @@ function clone (jsonObj){
     }
 }
 
-if(db){ 
-   alert('创建成功');
-}else{
-  alert(' 不支持数据库');
-}
-
 var DataBase = {
 
 	init : function(){
