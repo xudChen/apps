@@ -52,11 +52,21 @@
   	  		'opacity:1;'+
   	  '');
   	  
-  	  _temp_dialog_close_.innerHTML ="X";
+  	  _temp_dialog_close_.innerHTML ="<img src='img/close_btn.png'/>";
   	  _temp_dialog_close_.onclick =function(){
 	  	  document.body.removeChild(_temp_dialog_);
   	  }
+  	    	    	  
+  	  var _refresh_btn_ = document.createElement('img');
+  	  
+  	  _refresh_btn_.setAttribute('style', 'display:block;margin:0 auto;');
+  	  
+  	  _refresh_btn_.setAttribute('src', 'img/refresh.png')
+  	  
+  	  _device_list_.appendChild(_refresh_btn_);
+  	  
   	  _temp_dialog_.appendChild(_temp_dialog_close_);
+
   	  document.body.appendChild(_temp_dialog_);
   }
   

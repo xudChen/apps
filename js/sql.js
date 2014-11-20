@@ -1,4 +1,24 @@
-var db = openDatabase('bcsphere','','bcsphere',102400);
+function clone (jsonObj){
+    var buf;
+    if (jsonObj instanceof Array) {
+        buf = [];
+        var i = jsonObj.length;
+        while (i--) {
+            buf[i] = arguments.callee(jsonObj[i]);
+        }
+        return buf;
+    }else if (typeof jsonObj == "function"){
+        return jsonObj;
+    }else if (jsonObj instanceof Object){
+        buf = {};
+        for (var k in jsonObj) {
+            buf[k] = arguments.callee(jsonObj[k]);
+        }
+        return buf;
+    }else{
+        return jsonObj;
+    }
+}
 
 if(db){ 
    alert('创建成功');
@@ -7,135 +27,143 @@ if(db){
 }
 
 var DataBase = {
-	
+
 	init : function(){
-		this.createTable();
 	},
 
-	createTable : function(success,error){
-		db.transaction( function(tx) {
-			tx.executeSql(
-				"create table if not exists apps (id integer primary key autoincrement , name nvarchar(100),address nvarchar(1000),img nvarchar(1000))",
-				[],
-				function(tx,result){
-					if(success){
-						success(result);
-					}
-					console.log('创建apps表成功');
-				},
-				function(tx, err){
-					if(error){
-						error(err);
-					}
-					console.log('创建apps表失败:' + err.message);
-				}
-			);
-		});
-	 },
+	openDB : function (name,version,objectStoreName,success,error) {
 
-	insert : function(para,success,error){
-		db.transaction(function (tx) {
-			tx.executeSql(
-				"insert into apps (name,address,img) values(?,?,?)",
-				para,
-				function (tx,result) {
-					if(success){
-						success(result);
-					}
-					console.log('添加数据成功');
-				},
-				function (tx, err) {
-					if(error){
-						error(err);
-					}
-					console.log('添加数据失败: ' + err.message);
-				}
-			);
-		});
-	},
-
+		window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+	
+		if (!window.indexedDB) {
+			console.log('Your browser does not support IndexedDB,Plese try another DataBase!');
+		}
+		this.name = objectStoreName;
+		
+	    var request=window.indexedDB.open(name,version);
+	    
+	    request.onupgradeneeded = function(e) {
+	    	console.log("Upgrading...");
+			var db = e.target.result;
+			if (!db.objectStoreNames.contains(objectStoreName)) {  
+			    var objectStore = db.createObjectStore(objectStoreName, {  
+			        // primary key  
+			        keyPath: "id",  
+			        // auto increment  
+			        autoIncrement: true
+			    });
+				objectStore.createIndex("name", "name", { unique: false });
+			}
+		}
+	    
+	    request.onerror=function(e){
+	    	console.log('Open Error!');
+	    	if(error){
+	    		error(e.target.result);
+			}
+	    };
+	    
+	    request.onsuccess=function(e){
+	        DataBase.db=e.target.result;
+	        if(success)success();
+	    };
+	},	
+	
 	query : function(success,error){
-		db.transaction(function (tx) {
-			tx.executeSql(
-				"select * from apps",
-				[],
-				function (tx, result) {
-/* 					console.log(result.rows.item(1)); */
-					if(success){
-						success(result);
-					}
-				},
-				function (tx, err) {
-					if(error){
-						error(err);
-					}
-					console.log('查询失败: ' + err.message);
-				} 
-			);
-		});
-	},
-
-	update : function(para,success,error) {
-		db.transaction(function (tx) {
-			tx.executeSql(
-				"update apps set name = ?,address=?,img=? where id= ?",
-				para,
-				function (tx, result) {
-					if(success){
-						success(result);
-					}
-				},
-				function (tx, err) {
-					if(error){
-						error(err);
-					}
-					console.log('更新失败: ' + err.message);
-				}
-			);
-		});
+		var transaction = this.db.transaction([DataBase.name],"readonly");
+		var objectStore = transaction.objectStore(DataBase.name);
+		var cursor = objectStore.openCursor();
+		var data = [];
+		
+		cursor.onsuccess = function(e) {
+		    var result = e.target.result;
+			if(result){
+				data.push(clone(result));
+				result.continue();
+			}else{
+				return;
+			}
+		}
+		
+		cursor.onerror = function(e) {
+			if(error)error(e.target.error);
+			console.log("getData error ",e.target.error.name);
+		}
+		
+		transaction.oncomplete = function(e){
+			console.log('query complete');
+			if(success)success(data);
+		}
 	},
 	
-	del : function(id,success,error) {
-		db.transaction(function (tx) {
-			tx.executeSql(
-				"delete from apps where id= ?",
-				[id],
-				function (tx, result) {
-					if(success){
-						success(result);
-					}
-				},
-				function (tx, err) {
-					if(error){
-						error(err);
-					}
-					console.log('删除失败: ' + err.message);
-				}
-			);
-		});
+	queryByKey : function(key,success,error){
+		var transaction = this.db.transaction([DataBase.name],"readwrite");
+		var objectStore = transaction.objectStore(DataBase.name);
+		var request = objectStore.get(key);
+		
+		request.onsuccess = function(e) {
+		    var result = e.target.result;
+		    if(success)success(result);
+		}
+		
+		request.onerror = function(e) {
+			if(error)error(e.target.error);
+			console.log("getDataByKey error ",e.target.error.name);
+		}
 	},
 	
-	getCount : function(success,error){
-		db.transaction(function(tx){
-			tx.executeSql(
-				'select count(*) as count from apps',
-				[],
-				function(tx,result){
-					if(success){
-						success(result);
-					}
-				},
-				function(tx,err){
-					if(error){
-						error(err);
-					}
-					console.log("查询记录总条数失败: "+error.message);
-				}
-			);
-		});
+	insert : function(obj,success,error){
+		var transaction = this.db.transaction([DataBase.name],"readwrite");
+		var objectStore = transaction.objectStore(DataBase.name);
+		var request = objectStore.put(obj);
+		
+		request.onsuccess = function(e) {
+		    var result = e.target.result;
+		    if(success)success(result);
+		    console.log('add data success!...');
+		}
+		
+		request.complete = function(e){
+			
+		}
+		
+		request.onerror = function(e) {
+			if(error)error(e.target.error);
+			console.log("add data error ",e.target.error.name);
+		}
+	},
+	
+	delete : function(key,success,error){
+		var transaction = this.db.transaction([DataBase.name],"readwrite");
+		var objectStore = transaction.objectStore(DataBase.name);
+		var request = objectStore.delete(key);
+		
+		request.onsuccess = function(e) {
+		    if(success)success(e.target.result);
+		    console.log('remove data success!...');
+		}
+		
+		request.onerror = function(e) {
+			if(error)error(e.target.error);
+			console.log("remove data error ",e.target.error.name);
+		}
+	},
+	
+	update : function(key,obj,success,error){
+		var transaction = this.db.transaction([DataBase.name],"readwrite");
+		var objectStore = transaction.objectStore(DataBase.name);
+		var request = objectStore.get(key);
+		
+		request.onsuccess = function(e) {
+			e.target.result = obj;
+		    if(success)success(e.target.result);
+		    console.log('remove data success!...');
+		}
+		
+		request.onerror = function(e) {
+			if(error)error(e.target.error);
+			console.log("remove data error ",e.target.error.name);
+		}
 	}
 	
-
 }
-
-

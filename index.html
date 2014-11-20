@@ -1,142 +1,146 @@
 <!DOCTYPE html> <!--[if IE 9]><html class="lt-ie10" lang="en" > <![endif]--> 
 <html class="no-js" lang="en" >
-	<head>
-	 <meta charset="utf-8">
-	 <!-- If you delete this meta tag World War Z will become a reality -->
-	 <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-	 <title></title> 
-	 <link rel="stylesheet" href="css/normalize.css"> 
-	 <link rel="stylesheet" href="css/foundation.min.css"> 
-	 <style type="text/css">
+    <head>
+     <meta charset="utf-8">
+     <!-- If you delete this meta tag World War Z will become a reality -->
+     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+     <title></title> 
+     <link rel="stylesheet" href="css/normalize.css"> 
+     <link rel="stylesheet" href="css/foundation.min.css"> 
+     <style type="text/css">
 
-		 *{
-			 -webkit-tap-highlight-color:krgba(255,255,255,0);
-		 }
-		 
-		 .row_1 {
-		 	padding:2.5rem 0.8rem;
-		 	overflow-x: hidden;
-		 	overflow-y: auto;
-		 }
-		 
-		 .new_panel{
-			 margin-bottom: 0.5rem;
-			 padding: 0.5rem;
-		 }
-		 
-		 .p_center{
-			 text-align: center;
-			 font-size: 0.55rem;
-		 }
-		 
-		 .close_btn{
-		 	display: none;
-			position: absolute;
-			z-index: 999;
-			top:-0.7rem;
-			left:0.5rem;
-			width:100%;
-			height:100%;
-			-webkit-tap-highlight-color:rgba(255,255,255,0);
-		 };		 
-	 </style>
-	 <script src="js/modernizr.js"></script> 
-	 </head> 
-	 <body> 
-	 <!-- body content here -->
+         *{
+             -webkit-tap-highlight-color:krgba(255,255,255,0);
+         }
+         
+         .row_1 {
+            padding:2.5rem 0.8rem;
+            overflow-x: hidden;
+            overflow-y: auto;
+         }
+         
+         .new_panel{
+             margin-bottom: 0.5rem;
+             padding: 0.5rem;
+         }
+         
+         .p_center{
+             text-align: center;
+             font-size: 0.55rem;
+         }
+         
+         .close_btn{
+            display: none;
+            position: absolute;
+            z-index: 999;
+            top:-0.7rem;
+            left:0.5rem;
+            width:100%;
+            height:100%;
+            -webkit-tap-highlight-color:rgba(255,255,255,0);
+         };      
+     </style>
+     <script src="js/modernizr.js"></script> 
+     </head> 
+     <body> 
+     <!-- body content here -->
       <div class="row row_1">        
         <div id="addNew" class="large-3 small-3 columns" style="float:left;">
           <img src="img/addNew.png" style="border:1px solid #ccc" >
         </div>
         
       </div>
-	    
-	  <script type="text/javascript" src="js/jquery.js"></script> 
-	  <script type="text/javascript" src="js/foundation.min.js"></script>
-	  <script type="text/javascript" src="js/sql.js"></script>
-	  <script type="text/javascript">
-	  
-	  	  var isFirstTime = true;
-	  	  
-	  	  if(localStorage['isFirstTime']=='false'){
-		  	  isFirstTime = false;
-	  	  }
-	  	  
-		  $(function(){
-		    
-		    if(isFirstTime){
-		      DataBase.init();
-		      DataBase.getCount(function(result){
-			      if(result.rows.item(0).count==0){						 	
-			  	  	  DataBase.insert(['温度计','temperature.html','img/temperature.png']);
-				  	  DataBase.insert(['调光灯','rgblight.html','img/rgblight.jpg']);
-				  	  DataBase.insert(['蜂鸣器','buzzer.html','img/buzzer.jpg']);     
-			      }
-		      });
-		  	  localStorage['isFirstTime'] = !isFirstTime;
-		  	}
-		  	
-		  	$(document).click(function(){
-			  	$('.close_btn').css('display','none');
-		  	});
-		  	
-		  	DataBase.query(function(result){
-			  	var length = result.rows.length;
-			  	
-			  	for(var i=0;i<length;i++){
-				  	var app = $('<div class="large-3 small-3 columns">'+
-				  	    '<img src="'+result.rows.item(i).img+'">'+
-				  		'<div class="new_panel">'+
-				  			'<p class="p_center">'+result.rows.item(i).name+'</p>'+
-				  		'</div>'+
-				  		'<div  class="close_btn">'+
-				  			'<img src="img/close_btn.png" />'+
-				  		'</div>'+
-				  	  '</div>'
-				  	);
-				  	
-				  	(function(i){
-				  		var img = app.children('img');
-					  	
-				  		img.click(function(event){
-					  		event.stopPropagation();
-						  	location.href=result.rows.item(i).address;
-					  	});
-					  	
-					  	var touchEvent_interval=[];
-					  	
-					  	img[0].addEventListener('touchstart',function(event){
-						  	touchEvent_interval[i]=setTimeout(function(){
-							  $('.close_btn').css('display','block');	
-						  	},1500);
-					  	});
-					  	
-					  	img[0].addEventListener('touchend',function(event){
-						  	window.clearInterval(touchEvent_interval[i]);
-					  	});
-					  	
-				  	})(i);
-				  	
-				  	app.insertBefore('#addNew');
-				  		  
-				  	$('.close_btn').click(function(event){
-				  		event.stopPropagation();
-				  	});
-				  	
-				  	(function(i){
-					  	app.children('.close_btn').children('img').click(function(event){
-					  		event.stopPropagation();
-						  	$(this).parent().parent().remove();
-						  	DataBase.del([result.rows.item(i).id]);
-					  	});
-				  	})(i);
-			  	}
-		  	},function(error){
-			  	console.log(error.message);
-		  	});
-		  	
-		  	
-		  });
-	  </script>
-	</body> 
+        
+      <script type="text/javascript" src="js/jquery.js"></script> 
+      <script type="text/javascript" src="js/foundation.min.js"></script>
+      <script type="text/javascript" src="js/sql.js"></script>
+      <script type="text/javascript"> 
+      
+/*           var isFirstTime = true; */
+          var _apps_data_ = [];
+          
+          /*
+if(window.localStorage['isFirstTime']!=undefined && window.localStorage['isFirstTime']=='false'){
+              isFirstTime = false;
+          }
+*/
+
+          
+          $(function(){          	
+            DataBase.openDB('bcsphere',1,'apps',function(){
+                DataBase.query(function(result){
+                    _apps_data_ = result;
+                    var length = result.length;
+                    
+/*                     if(isFirstTime){                       */
+                       if(result.length==0){
+                          DataBase.insert({name:'温度计',address:'temperature.html',img:'img/temperature.png'});
+                          DataBase.insert({name:'调光灯',address:'rgblight.html',img:'img/rgblight.jpg'});
+                          DataBase.insert({name:'蜂鸣器',address:'buzzer.html',img:'img/buzzer.jpg'});     
+                       }
+/* 					   window.localStorage['isFirstTime'] = !isFirstTime; */
+/*                     } */
+                    
+					for(var i=0;i<length;i++){
+						var data = result[i].value;
+	                    var app = $('<div class="large-3 small-3 columns">'+
+	                        '<img src="'+data.img+'">'+
+	                        '<div class="new_panel">'+
+	                            '<p class="p_center">'+data.name+'</p>'+
+	                        '</div>'+
+	                        '<div  class="close_btn">'+
+	                            '<img src="img/close_btn.png" />'+
+	                        '</div>'+
+	                      '</div>'
+	                    );
+	                    
+	                    (function(i){
+	                        var img = app.children('img');
+	                        
+	                        img.click(function(event){
+	                            event.stopPropagation();
+	                            location.href= data.address;
+	                        });
+	                        
+	                        var touchEvent_interval=[];
+	                        
+	                        img[0].addEventListener('touchstart',function(event){
+	                            touchEvent_interval[i]=setTimeout(function(){
+	                              $('.close_btn').css('display','block');   
+	                            },618);
+	                        });
+	                        
+	                        img[0].addEventListener('touchend',function(event){
+	                            window.clearInterval(touchEvent_interval[i]);
+	                        });
+	                        
+	                    })(i);
+	                    
+	                    app.insertBefore('#addNew');
+	                          
+	                    $('.close_btn').click(function(event){
+	                        event.stopPropagation();
+	                    });
+	                    
+	                    (function(primaryKey){
+	                        app.children('.close_btn').children('img').click(function(event){
+	                            event.stopPropagation();
+	                            $(this).parent().parent().remove();
+	                            DataBase.delete(primaryKey);
+	                        });
+	                    })(result[i].primaryKey);
+	                }
+                },function(error){
+                    console.log(JSON.stingify(error));
+                });
+            },function(error){
+                console.log(JSON.stringify(error));
+            });
+            
+            $(document).click(function(){
+                $('.close_btn').css('display','none');
+            });
+          });
+      </script>
+    </body> 
 </html>
