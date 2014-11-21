@@ -2,10 +2,10 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link type="text/css" rel="stylesheet" media="all" href="css/jquery.highlight.css" />
 		<title></title>
 		<style type="text/css">
 			/* colorpicker styles */
+			
 			.colorpicker {
 			    background-color: #222222;
 			    border-radius: 5px 5px 5px 5px;
@@ -13,6 +13,7 @@
 			    color: #FFFFFF;
 			    font-size: 12px;
 			    position: absolute;
+			    left:0px;
 			}
 			#picker {
 			    cursor: crosshair;
@@ -55,110 +56,25 @@
 			}
 		</style>
 		<script type="text/javascript" src="js/jquery.js"></script>
-		<script type="text/javascript" src="js/jquery.highlight.js"></script>
-		<script type="text/javascript">
-			    $(document).ready(function(){
-					$('pre.code').highlight({source:1, zebra:1, indent:'space', list:'ol'});
-				}); 
-		</script>
 	</head>
 	<body>
 		<div>
 			<div>
-				<h1>调光灯</h1>
-				<p>作者：？？？</p>
+				选择数据来源：<select id="test">
+								<option value="0">真实设备</option>
+								<option value="1">模拟设备</option>
+							</select>
+				<button id="selectDevice">扫描设备</button>
 			</div>
-			<div>
-				<div>
-					<h3>1、开始</h3>
-					<p>
-						&nbsp;&nbsp;&nbsp;&nbsp;随着市场对智能硬件的需求的增长，智能硬件相关APP的开发者也在经受着各种考验。人们更热切的需求一种简单，易懂的开发方式使APP的开发变得快速，高效。
-					</p>
-				</div>
-				<div>
-					<h3>2、为什么选择HTML</h3>
-					<p>
-						　 你可以称之为“直觉”，但是我认为移动技术将会变得更加的流行。我知道，这里有些非常疯狂的猜测，有些可能你也想到了 – Mobile是一个时尚！移动设备将占领世界。更多的接受移动设备将会增长的非常迅速。这意味着更多的用户会选择使用移动设备访问网站或者web应用。HTML5是最移动化的开发工具。随着Adobe宣布放弃移动flash开发，你将会考虑使用HTML5来开发webp应用。</p>
-				</div>
-			<div>
-					<h3>3、如何将demo Fork到你的GitHub并利用GitHub搭建一个网站</h3>
-					<div>
-						<h4>3.1 注册git账号</h4>
-						<p>
-							打开站点：<a href="https://github.com">https://github.com/</a>，注册一个账号。
-						</p>
-						<h4>3.2 将demo fork到你的账号下</h4>
-						<p>
-							  3.2.1 打开站点：<a href="https://github.com/xudChen/apps">https://github.com/xudChen/apps</a> 你会看到右上角有一个Fork按钮，点击以后（已登录状态下）选择你的账户，将demo Fork到你的账号下。
-						</p>
-						<p>
-							  3.2.2 点击进入fork到你账号之后的apps项目，在项目的右边会有一列菜单，菜单中选择settings进入设置页面。
-						</p>
-						<p>
-							  3.2.3 在我们进入的Options选项卡中我们发现如下条目：GitHub Pages.
-						</p>
-						<p>
-							  3.2.4 点击“Automatic Page Generator”我们看到跳转的页面:Project Name:网站标题;Tagline：网站副标题；Body：这个就是网页源码了；Google Analytics Tracking ID：搜索引擎抓取关键字.这些你都可以自定义。
-						</p>
-						<p>
-							  3.2.5 填完后（PS:后面依然可以自己修改），我们点击" Continue to Layouts"选择自己的主题(PS:可以先选上，搞定后自己改代码)。
-						</p>
-						<p>
-							  3.2.6 选好之后点击"Publish" 就成功了。我们预览看看:http://xudchen.github.io/apps（xudchen:用户名;apps：项目名）。
-						</p>
-					</div>
-				</div>
-				<div>
-					<h3>4、如何通过ajax请求获取扫描到的设备</h3>
-					<pre class="code" lang="js">
-var url = "http://127.0.0.1:8086/ble?callback=?";
-var ble = {
-	address : "local",
-	resource : "/devices/nearby",
-	operation : "read",
-	settings : "low latency"
-};
-
-$.getJSON(url,ble,function(data){
-	console.log(JSON.stringify(data));
-});
-					</pre>
-				</div>
-				<div>
-					<h3>5、选择设备之后对设备进行操作的ajax请求</h3>
-						<pre class="code" lang="js">
-var url = "http://127.0.0.1:8086/ble?callback=?";
-var ble = {
-	address : "56:a3:b3:et:a0:e1",
-	resource : "/peripherals/rgblight",
-	operation : "write",
-	value : "00fec7"
-};
-
-$.getJSON(url,ble,function(data){
-	console.log(JSON.stringify(data));
-});
-						</pre>
-				</div>
-				<div>
-					<h3>6、示例</h3>
-					选择数据来源：<select id="test">
-									<option value="0">真实设备</option>
-									<option value="1">模拟设备</option>
-								</select>
-					<button id="selectDevice">扫描设备</button>
-					
-					<div class="colorpicker">
-						<canvas id="picker" var="1" width="300" height="300"></canvas>
-						 
-						<div class="controls">
-							<div><label>R</label> <input type="text" id="rVal" /></div>
-							<div><label>G</label> <input type="text" id="gVal" /></div>
-							<div><label>B</label> <input type="text" id="bVal" /></div>
-							<div><label>RGB</label> <input type="text" id="rgbVal" /></div>
-							<div><label>HEX</label> <input type="text" id="hexVal" /></div>
-						</div>
-					</div>
+			<div class="colorpicker">
+				<canvas id="picker" var="1" width="300" height="300"></canvas>
+				 
+				<div class="controls">
+					<div><label>R</label> <input type="text" id="rVal" /></div>
+					<div><label>G</label> <input type="text" id="gVal" /></div>
+					<div><label>B</label> <input type="text" id="bVal" /></div>
+					<div><label>RGB</label> <input type="text" id="rgbVal" /></div>
+					<div><label>HEX</label> <input type="text" id="hexVal" /></div>
 				</div>
 			</div>
 		</div>

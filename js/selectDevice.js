@@ -36,7 +36,7 @@
   	  
   	  _device_list_.style.left = (windowWidth/2 - (windowWidth*0.75)/2)+'px';
   	  
-  	  _device_list_.innerHTML = "<ul id='_device_list_ul_' style='position:relative;list-style-type:none;text-align:center;margin-top:5px;width:100%;background-color:white'></ul>";
+  	  _device_list_.innerHTML = "<ul id='_device_list_ul_' style='display:block;position:relative;list-style-type:none;text-align:center;margin-top:5px;width:100%;background-color:white'></ul>";
   	  
   	  _temp_dialog_.appendChild(_device_list_);
   	  
@@ -63,7 +63,7 @@
   	  
   	  _refresh_btn_.setAttribute('src', 'img/refresh.png')
   	  
-  	  _device_list_.appendChild(_refresh_btn_);
+/*   	  _device_list_.appendChild(_refresh_btn_); */
   	  
   	  _temp_dialog_.appendChild(_temp_dialog_close_);
 
@@ -94,7 +94,7 @@
 			
 			var li_element = document.createElement('li');
 			
-			li_element.setAttribute('style', 'float:left;width:90%;margin:0 auto;text-align:left;border-bottom:1px solid #ccc;height:80px;');
+			li_element.setAttribute('style', 'diaplay:block;float:left;width:100%;margin:0 auto;text-align:left;border-bottom:1px solid #ccc;height:80px;');
 			(function(device,callback){	
 				li_element.onclick = function(){
 					DEVICEADDRESS = device.address;

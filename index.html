@@ -52,8 +52,8 @@
           </div> 
         </div>
         
-        <div class="large-3 small-3 columns" style="float:left;">
-        	<img src="img/app.gif">
+        <div id="guide" class="large-3 small-3 columns" style="float:left;">
+        	<img src="img/guide.png"  style="border:1px solid #ccc" >
 	        <div class="new_panel">
 	            <p class="p_center">上手指南</p>
 	        </div>
@@ -78,6 +78,10 @@ if(window.localStorage['isFirstTime']!=undefined && window.localStorage['isFirst
             init();            
 			$(document).click(function(){
 			    $('.close_btn').css('display','none');
+			});
+			
+			$('#guide').click(function(){
+				location.href = 'guide.html';
 			});
           });
           
