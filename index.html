@@ -45,10 +45,20 @@
      <body> 
      <!-- body content here -->
       <div class="row row_1">        
-        <div id="addNew" class="large-3 small-3 columns" style="float:left;">
+        <div id="addNew" class="large-3 small-3 columns">
           <img src="img/addNew.png" style="border:1px solid #ccc" >
+          <div class="new_panel">
+	          <p>&nbsp;</p>
+          </div> 
         </div>
         
+        <div class="large-3 small-3 columns" style="float:left;">
+        	<img src="img/app.gif">
+	        <div class="new_panel">
+	            <p class="p_center">上手指南</p>
+	        </div>
+		</div>
+      
       </div>
         
       <script type="text/javascript" src="js/jquery.js"></script> 
@@ -102,7 +112,7 @@ if(window.localStorage['isFirstTime']!=undefined && window.localStorage['isFirst
 	                      '</div>'
 	                    );
 	                    
-	                    (function(i){
+	                    (function(i,data){
 	                        var img = app.children('img');
 	                        
 	                        img.click(function(event){
@@ -122,7 +132,7 @@ if(window.localStorage['isFirstTime']!=undefined && window.localStorage['isFirst
 	                            window.clearInterval(touchEvent_interval[i]);
 	                        });
 	                        
-	                    })(i);
+	                    })(i,data);
 	                    
 	                    app.insertBefore('#addNew');
 	                          
