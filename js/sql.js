@@ -23,141 +23,80 @@ function clone (jsonObj){
 var DataBase = {
 
 	init : function(){
+	   
 	},
 
-	openDB : function (name,version,objectStoreName,success,error) {
-
-		window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+	openDB : function (name,version,introduction,size) {
+		if(!window.openDatabase){
+			console.log('Your browser does not support SqlLite,Plese try another DataBase!');
+			return;
+		}		
+		this.db = window.openDatabase(name,version,introduction,size);
+	},
 	
-		if (!window.indexedDB) {
-			console.log('Your browser does not support IndexedDB,Plese try another DataBase!');
-		}
-		this.name = objectStoreName;
-		
-	    var request=window.indexedDB.open(name,version);
-	    
-	    request.onupgradeneeded = function(e) {
-	    	console.log("Upgrading...");
-			var db = e.target.result;
-			if (!db.objectStoreNames.contains(objectStoreName)) {  
-			    var objectStore = db.createObjectStore(objectStoreName, {  
-			        // primary key  
-			        keyPath: "id",  
-			        // auto increment  
-			        autoIncrement: true
-			    });
-				objectStore.createIndex("name", "name", { unique: false });
-			}
-		}
-	    
-	    request.onerror=function(e){
-	    	console.log('Open Error!');
-	    	if(error){
-	    		error(e.target.result);
-			}
-	    };
-	    
-	    request.onsuccess=function(e){
-	        DataBase.db=e.target.result;
-	        if(success)success();
-	    };
-	},	
+	createTable : function(name,success,error){
+		this.db.transaction(function(tx){ 
+            tx.executeSql('CREATE TABLE IF NOT EXISTS apps(id integer PRIMARY KEY autoincrement,name nvarchar(1000),address nvarchar(1000),img nvarchar(1000))',[],function(tx,rs){
+	            if(success)success(rs);
+            },function(tx,rs){
+	            if(error)error(rs);
+            });
+        });
+	},
 	
 	query : function(success,error){
-		var transaction = this.db.transaction([DataBase.name],"readonly");
-		var objectStore = transaction.objectStore(DataBase.name);
-		var cursor = objectStore.openCursor();
-		var data = [];
-		
-		cursor.onsuccess = function(e) {
-		    var result = e.target.result;
-			if(result){
-				data.push(clone(result));
-				result.continue();
-			}else{
-				return;
-			}
-		}
-		
-		cursor.onerror = function(e) {
-			if(error)error(e.target.error);
-			console.log("getData error ",e.target.error.name);
-		}
-		
-		transaction.oncomplete = function(e){
-			console.log('query complete');
-			if(success)success(data);
-		}
+		this.db.transaction(function(tx){
+            tx.executeSql('SELECT * FROM apps',[],function(tx,rs){
+                if(success)success(rs);
+            },function(tx,rs){
+	            if(error)error(rs);
+            });
+        }); 
 	},
 	
-	queryByKey : function(key,success,error){
-		var transaction = this.db.transaction([DataBase.name],"readwrite");
-		var objectStore = transaction.objectStore(DataBase.name);
-		var request = objectStore.get(key);
-		
-		request.onsuccess = function(e) {
-		    var result = e.target.result;
-		    if(success)success(result);
-		}
-		
-		request.onerror = function(e) {
-			if(error)error(e.target.error);
-			console.log("getDataByKey error ",e.target.error.name);
-		}
+	insert : function(param,success,error){
+		this.db.transaction(function(tx){
+            tx.executeSql(
+            	'INSERT INTO apps (name,address,img) VALUES (?,?,?)',
+            	 param,
+            	 function(tx,rs){ 
+					 if(success)success(rs); 
+				 },
+				 function(tx,err){
+				 	console.log(err.message);
+					 if(error)error(rs);
+				 }
+			);
+        });
 	},
 	
-	insert : function(obj,success,error){
-		var transaction = this.db.transaction([DataBase.name],"readwrite");
-		var objectStore = transaction.objectStore(DataBase.name);
-		var request = objectStore.put(obj);
-		
-		request.onsuccess = function(e) {
-		    var result = e.target.result;
-		    if(success)success(result);
-		    console.log('add data success!...');
-		}
-		
-		request.complete = function(e){
-			
-		}
-		
-		request.onerror = function(e) {
-			if(error)error(e.target.error);
-			console.log("add data error ",e.target.error.name);
-		}
+	delete : function(id,success,error){
+		this.db.transaction(function (tx) {
+			tx.executeSql(
+				"delete from apps where id= ?",
+				[id],
+				function (tx, rs) {
+					if(success)success(rs);
+				},
+				function (tx, err) {
+					if(error)error(err);
+				}
+			);
+		});
 	},
 	
-	delete : function(key,success,error){
-		var transaction = this.db.transaction([DataBase.name],"readwrite");
-		var objectStore = transaction.objectStore(DataBase.name);
-		var request = objectStore.delete(key);
-		
-		request.onsuccess = function(e) {
-		    if(success)success(e.target.result);
-		    console.log('remove data success!...');
-		}
-		
-		request.onerror = function(e) {
-			if(error)error(e.target.error);
-			console.log("remove data error ",e.target.error.name);
-		}
-	},
-	
-	update : function(key,obj,success,error){
-		var transaction = this.db.transaction([DataBase.name],"readwrite");
-		var objectStore = transaction.objectStore(DataBase.name);
-		var request = objectStore.get(key);
-		
-		request.onsuccess = function(e) {
-			e.target.result = obj;
-		    if(success)success(e.target.result);
-		    console.log('remove data success!...');
-		}
-		
-		request.onerror = function(e) {
-			if(error)error(e.target.error);
-			console.log("remove data error ",e.target.error.name);
-		}
+	update : function(param,success,error){
+		this.db.transaction(function (tx) {
+			tx.executeSql(
+				"update stu set name = ?,address=?,img=? where id=?",
+				param,
+				function (tx, rs) {
+					if(success)suceess(rs);
+				},
+				function (tx, err) {
+					if(error)error(err);
+				}
+			);
+		});
 	}
-	
 }

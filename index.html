@@ -66,14 +66,12 @@
       <script type="text/javascript" src="js/sql.js"></script>
       <script type="text/javascript"> 
       
-/*           var isFirstTime = true; */
-          var _apps_data_ = [];
-          
-          /*
-if(window.localStorage['isFirstTime']!=undefined && window.localStorage['isFirstTime']=='false'){
+          var isFirstTime = true;
+
+          if(window.localStorage['isFirstTime']!=undefined && window.localStorage['isFirstTime']=='false'){
               isFirstTime = false;
           }
-*/
+          
           $(function(){          	
             init();            
 			$(document).click(function(){
@@ -85,30 +83,30 @@ if(window.localStorage['isFirstTime']!=undefined && window.localStorage['isFirst
 			});
 			
 			$('#guide').click(function(){
-				location.href = 'guide.html';
+				location.href = 'https://xudchen.github.io/nRF51822_EK_TM_DEMO/index.html';
 			});
           });
           
           function init(){
-	          DataBase.openDB('bcsphere',1,'apps',function(){
-                DataBase.query(function(result){
-                    _apps_data_ = result;
-                    var length = result.length;
-/*                     if(isFirstTime){                       */
+	          DataBase.openDB('bcsphere','','apps',1024*1024);
+	          DataBase.createTable('apps');
+              DataBase.query(function(result){
+                    var length = result.rows.length;
+                    if(isFirstTime){                      
                        if(length==0){
-                          DataBase.insert({name:'温度计',address:'temperature.html',img:'img/temperature.png'},function(){
-	                      	DataBase.insert({name:'调光灯',address:'rgblight.html',img:'img/rgblight.jpg'},function(){
-		                  		DataBase.insert({name:'蜂鸣器',address:'buzzer.html',img:'img/buzzer.jpg'},function(){
-							  		init(); 
-							  	});    	
-	                      	});    
+                          DataBase.insert(['温度计','temperature.html','img/temperature.png'],function(){
+	                      	DataBase.insert(['调光灯','rgblight.html','img/rgblight.jpg'],function(){
+		                      DataBase.insert(['蜂鸣器','buzzer.html','img/buzzer.jpg'],function(){
+			                      window.localStorage['isFirstTime'] = !isFirstTime;
+								  init();	
+		                      });
+	                      	});
                           });
-                       }
-/* 					   window.localStorage['isFirstTime'] = !isFirstTime; */
-/*                     } */
+		               }
+                    }
                     
 					for(var i=0;i<length;i++){
-						var data = result[i].value;
+						var data = result.rows.item(i);
 	                    var app = $('<div class="large-3 small-3 columns">'+
 	                        '<img src="'+data.img+'">'+
 	                        '<div class="new_panel">'+
@@ -148,20 +146,17 @@ if(window.localStorage['isFirstTime']!=undefined && window.localStorage['isFirst
 	                        event.stopPropagation();
 	                    });
 	                    
-	                    (function(primaryKey){
+	                    (function(id){
 	                        app.children('.close_btn').children('img').click(function(event){
 	                            event.stopPropagation();
 	                            $(this).parent().parent().remove();
-	                            DataBase.delete(primaryKey);
+	                            DataBase.delete(id);
 	                        });
-	                    })(result[i].primaryKey);
+	                    })(data.id);
 	                }
                 },function(error){
-                    console.log(JSON.stingify(error));
+                    console.log(error.message);
                 });
-            },function(error){
-                console.log(JSON.stringify(error));
-            });
           }          
       </script>
     </body> 

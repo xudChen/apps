@@ -45,7 +45,34 @@
      <body> 
      <!-- body content here -->
       <div class="row row_1">        
- 
+		
+		<div id="guide" class="large-3 small-3 columns" style="float:left;">
+        	<img src="img/temperature.png"  style="border:1px solid #ccc" >
+	        <div class="new_panel">
+	        	<p class="address">temperature.html</p>
+	            <p class="name">温度计</p>
+	            <img class="add_btn" src="img/add_app.png">
+	        </div>
+		</div>
+		
+		<div id="guide" class="large-3 small-3 columns" style="float:left;">
+        	<img src="img/rgblight.jpg"  style="border:1px solid #ccc" >
+	        <div class="new_panel">
+	        	<p class="address">rgblight.html</p>
+	            <p class="name">调光灯</p>
+	            <img class="add_btn" src="img/add_app.png">
+	        </div>
+		</div>
+
+		<div id="guide" class="large-3 small-3 columns" style="float:left;">
+        	<img src="img/buzzer.jpg"  style="border:1px solid #ccc" >
+	        <div class="new_panel">
+	        	<p class="address">buzzer.html</p>
+	            <p class="name">蜂鸣器</p>
+	            <img class="add_btn" src="img/add_app.png">
+	        </div>
+		</div>
+
         <div id="guide" class="large-3 small-3 columns" style="float:left;">
         	<img src="img/guide.png"  style="border:1px solid #ccc" >
 	        <div class="new_panel">
@@ -58,8 +85,8 @@
 		<div id="guide" class="large-3 small-3 columns" style="float:left;">
         	<img src="img/guide.png"  style="border:1px solid #ccc" >
 	        <div class="new_panel">
-	        	<p class="address">http://www.souhu.com</p>
-	            <p class="name">搜狐</p>
+	        	<p class="address">http://www.sina.com</p>
+	            <p class="name">新浪</p>
 	            <img class="add_btn" src="img/add_app.png">
 	        </div>
 		</div>
@@ -80,22 +107,21 @@
       <script type="text/javascript"> 
       
           $(function(){
-          		DataBase.openDB('bcsphere',1,'apps',function(){
-	          		DataBase.query(function(result){
-				  		var length = result.length;
-			          	$('.address').each(function(key,value){
-				          	
-				          	for(var i=0;i<length;i++){
-					          	if(value.innerHTML == result[i].value.address){
-						          	var _parent = $(value).parent();
-						          	$('.add_btn',_parent).attr('src','img/added_app.png');
-						          	break;
-					          	}
+          		DataBase.openDB('bcsphere','','apps',1024*1024);
+		  		DataBase.createTable('apps');
+		  		
+          		DataBase.query(function(result){
+			  		var length = result.rows.length;
+		          	$('.address').each(function(key,value){
+			          	
+			          	for(var i=0;i<length;i++){
+				          	if(value.innerHTML == result.rows.item(i).address){
+					          	var _parent = $(value).parent();
+					          	$('.add_btn',_parent).attr('src','img/added_app.png');
+					          	break;
 				          	}
-			          	});		          		
-	          		},function(error){
-		          		console.log(JSON.stringify(error));
-	          		});
+			          	}
+		          	});		          		
           		},function(error){
 	          		console.log(JSON.stringify(error));
           		});
@@ -110,8 +136,7 @@
 	          			
 	          			var that = this;
 	          			
-	          			DataBase.openDB('bcsphere',1,'apps',function(){
-		          			DataBase.insert({name:name,address:address,img:img});
+	          			DataBase.insert([name,address,img],function(){
 				  			that.src="img/added_app.png"
 	          			},function(error){
 		          			console.log(JSON.stringify(error));
