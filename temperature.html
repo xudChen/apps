@@ -1,66 +1,68 @@
+<!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title></title>
-		<script type="text/javascript" src="js/jquery.js"></script>
-	</head>
-	<body>
-		<div>
-			<div>
-				<div>
-					选择数据来源：<select id="test">
-									<option value="0">真实设备</option>
-									<option value="1">模拟设备</option>
-								</select>
-					<button id="selectDevice">扫描设备</button>
-					<button id="temperature">获取温度</button>
-					<div>
-						<p  style="float:left;" >当前温度：</p><p style="float:left;" id="degree"></p>
-					</div>
-				</div>
-			</div>
-		</div>
-		<script type="text/javascript" src="js/selectDevice.js"></script>
-		<script type="text/javascript">
-		
-		var url = '';
-		
-		$(function(){
-			$('#selectDevice').click(function(){
-				selectDevice(function(data){
-					console.log(JSON.stringify(data));
-				});
-			})
-			
-			if($('#test').val()==0){
-				url = 'http://127.0.0.1:8086/ble?callback=?';
-			}else{
-				url = 'http://www.gatt.io:8080/server?callback=?';
-			}
-			
-			$('#test').change(function(){
-				if($('#test').val()==0){
-					url = 'http://127.0.0.1:8086/ble?callback=?';
-				}else{
-					url = 'http://www.gatt.io:8080/server?callback=?';
-				}
-			});
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="css/jquery.mobile.flatui.css" />
+    <title>温度计</title>
+  </head>
+  <body>
+    <div data-role="page">
 
-		    $('#temperature').click(function() { // click event handler
-				if(!(typeof DEVICEADDRESS == 'undefined')){
-					var ble = {
-						address : DEVICEADDRESS,
-						resource : "/sensors/temperature",
-						operation : "read"
-					};
-					
-					$.getJSON(url,ble,function(data){
-						$('#degree').html(data['value']+"℃");
-					});
-				}
-		    }); 
-		});
-		</script>
-	</body>
+      <div data-role="panel" id="panel" data-position="right" data-theme="a" data-display="push"></div>
+
+      <div data-role="header">
+        <a data-iconpos="notext" data-role="button" data-icon="home" title="Home">Home</a>
+        <h1>温度计</h1>
+        <a data-iconpos="notext" href="#panel" data-role="button" data-icon="flat-menu"></a>
+      </div>
+
+      <div data-role="content" role="main">
+        <div>
+          <h1>仿真模式</h1>
+          <p>假设您现在手边还未获得开发板，我们提供了仿真模式来模拟nRF51822 EK TM的行为。启动仿真模式，请打开开关。</p>
+          <select name="mode" id="mode" data-role="slider">
+            <option value="0">OFF</option>
+            <option value="1">ON</option>
+          </select>
+        </div>
+        <div>
+          <h1>扫描蓝牙设备</h1>
+          <p> 请为下面的例子选择一个设备. 
+          如果设备列表没有显示请点击<a id="scan-button" href="#" data-inline="true">刷新</a>.</p>
+		  <div id="device-list">
+         	 Empty List
+		  </div>
+        </div>
+        <div>
+          <h2>读取温度传感器数据</h2>
+          <p id="temperature"> 当前温度是: <span id="temperature-value"> -- ℃ </span> (点击温度刷新) </p>
+        </div>
+      </div>
+      <div data-role="footer">
+        <h1>xudong.chen@jumacc.com</h1>
+      </div>
+
+    </div>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/jquery.mobile-1.3.1.min.js"></script>
+    <script type="text/javascript" src="js/juma.js"></script>
+    <script type="text/javascript">
+		$(function(){
+			$('#mode').change(function(){
+				juma.emulation_mode($(this).val());
+			});
+		
+			$('#scan-button').click(function() {
+				juma.scan('#device-list');
+		    });
+
+			$('#temperature').click(function() {
+			    juma.read("/sensors/temperature",function(value){
+				    $('#temperature-value').html(value+"℃");
+			    });
+			});
+		});  
+    </script>
+  </body>
 </html>

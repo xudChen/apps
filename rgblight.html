@@ -2,158 +2,101 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title></title>
+		<link rel="stylesheet" type="text/css" href="css/jquery.mobile.flatui.css" />
+		<title>调光灯</title>
 		<style type="text/css">
-			/* colorpicker styles */
-			
 			.colorpicker {
 			    background-color: #222222;
 			    border-radius: 5px 5px 5px 5px;
 			    box-shadow: 2px 2px 2px #444444;
 			    color: #FFFFFF;
 			    font-size: 12px;
-			    position: absolute;
-			    left:0px;
+			    width:100%;
+			    height: 300px;
+			    position: relative;
 			}
 			#picker {
 			    cursor: crosshair;
-			    float: left;
 			    margin: 10px;
 			    border: 0;
 			}
-			.controls {
-			    float: right;
-			    margin: 10px;
-			}
-			.controls > div {
-			    border: 1px solid #2F2F2F;
-			    margin-bottom: 5px;
-			    overflow: hidden;
-			    padding: 5px;
-			}
-			.controls label {
-			    float: left;
-			}
-			.controls > div input {
-			    background-color: #121212;
-			    border: 1px solid #2F2F2F;
-			    color: #DDDDDD;
-			    float: right;
-			    font-size: 10px;
-			    height: 14px;
-			    margin-left: 6px;
-			    text-align: center;
-			    text-transform: uppercase;
-			    width: 75px;
-			}
-			.preview {
-			    background: url("../images/select.png") repeat scroll center center transparent;
-			    border-radius: 3px;
-			    box-shadow: 2px 2px 2px #444444;
-			    cursor: pointer;
-			    height: 30px;
-			    width: 30px;
-			}
 		</style>
-		<script type="text/javascript" src="js/jquery.js"></script>
 	</head>
 	<body>
-		<div>
-			<div>
-				选择数据来源：<select id="test">
-								<option value="0">真实设备</option>
-								<option value="1">模拟设备</option>
-							</select>
-				<button id="selectDevice">扫描设备</button>
-			</div>
-			<div class="colorpicker">
-				<canvas id="picker" var="1" width="300" height="300"></canvas>
-				 
-				<div class="controls">
-					<div><label>R</label> <input type="text" id="rVal" /></div>
-					<div><label>G</label> <input type="text" id="gVal" /></div>
-					<div><label>B</label> <input type="text" id="bVal" /></div>
-					<div><label>RGB</label> <input type="text" id="rgbVal" /></div>
-					<div><label>HEX</label> <input type="text" id="hexVal" /></div>
-				</div>
-			</div>
-		</div>
-		<script type="text/javascript" src="js/selectDevice.js"></script>
-		<script type="text/javascript">
-		
-		var url = '';
-		
-		$(function(){
-			$('#selectDevice').click(function(){
-				selectDevice(function(data){
-					console.log(JSON.stringify(data));
-				});
-			})
-			
-			if($('#test').val()==0){
-				url = 'http://127.0.0.1:8086/ble?callback=?';
-			}else{
-				url = 'http://www.gatt.io:8080/server?callback=?';
-			}
-			
-			$('#test').change(function(){
-				if($('#test').val()==0){
-					url = 'http://127.0.0.1:8086/ble?callback=?';
-				}else{
-					url = 'http://www.gatt.io:8080/server?callback=?';
-				}
-			});
-		
-		    // create canvas and context objects
-		    var canvas = document.getElementById('picker');
-		    var ctx = canvas.getContext('2d');
-		
-		    // drawing active image
-		    var image = new Image();
-		    image.onload = function () {
-		        ctx.drawImage(image, 0, 0, image.width, image.height); // draw the image on the canvas
-		    }
-		
-		    // select desired colorwheel
-		    var imageSrc = 'img/colorwheel1.png';
-		    image.src = imageSrc;
+		<div data-role="page">
 
-		    $('#picker').click(function(e) { // click event handler
-		    		e.preventDefault();
+	      <div data-role="panel" id="panel" data-position="right" data-theme="a" data-display="push"></div>
+	
+	      <div data-role="header">
+	        <a data-iconpos="notext" data-role="button" data-icon="home" title="Home">Home</a>
+	        <h1>温度计</h1>
+	        <a data-iconpos="notext" href="#panel" data-role="button" data-icon="flat-menu"></a>
+	      </div>
+	
+	      <div data-role="content" role="main">
+	        <div>
+	          <h1>仿真模式</h1>
+	          <p>假设您现在手边还未获得开发板，我们提供了仿真模式来模拟nRF51822 EK TM的行为。启动仿真模式，请打开开关。</p>
+	          <select name="mode" id="mode" data-role="slider">
+	            <option value="0">OFF</option>
+	            <option value="1">ON</option>
+	          </select>
+	        </div>
+	        <div>
+	          <h1>扫描蓝牙设备</h1>
+	          <p> 请为下面的例子选择一个设备. 
+	          如果设备列表没有显示请点击<a id="scan-button" href="#" data-inline="true">刷新</a>.</p>
+			  <div id="device-list">
+	         	 Empty List
+			  </div>
+	        </div>
+	        <div>
+		        <h2>点亮LED灯</h2>
+				<p>当前颜色为 : <span id="hexVal"> -- </span>(点击图片选取颜色)</p>
+		      	<div class="colorpicker">
+					<canvas id="picker" var="1" width="300" height="300"></canvas>
+				</div>
+	        </div>
+	      </div>
+	      <div data-role="footer">
+	        <h1>xudong.chen@jumacc.com</h1>
+	      </div>
+	    </div>
+		<script type="text/javascript" src="js/jquery.min.js"></script>
+	    <script type="text/javascript" src="js/jquery.mobile-1.3.1.min.js"></script>
+	    <script type="text/javascript" src="js/juma.js"></script>
+	    <script type="text/javascript">
+			$(function(){
+				$('#mode').change(function(){
+					juma.emulation_mode($(this).val());
+				});
+			
+				$('#scan-button').click(function() {
+					juma.scan('#device-list');
+			    });
+	
+				var canvas = document.getElementById('picker');
+				var ctx = canvas.getContext('2d');
+				var image = new Image();
+				image.onload = function(){
+				    ctx.drawImage(image, 0, 0, image.width, image.height);
+				}
+				var imageSrc = 'img/colorwheel1.png';
+				image.src = imageSrc;
+				$('#picker').click(function(e) {
 					var canvasOffset = $(canvas).offset();
-		            var canvasX = Math.floor(e.pageX - canvasOffset.left);
-		            var canvasY = Math.floor(e.pageY - canvasOffset.top);
-		
-		            // get current pixel
-		            var imageData = ctx.getImageData(canvasX, canvasY, 1, 1);
-		            var pixel = imageData.data;
-		
-		            // update preview color
-		            var pixelColor = "rgb("+pixel[0]+", "+pixel[1]+", "+pixel[2]+")";
-		            
-		            // update controls
-		            $('#rVal').val(pixel[0]);
-		            $('#gVal').val(pixel[1]);
-		            $('#bVal').val(pixel[2]);
-		            $('#rgbVal').val(pixel[0]+','+pixel[1]+','+pixel[2]);
-		
-		            var dColor = pixel[2] + 256 * pixel[1] + 65536 * pixel[0];
-		            $('#hexVal').val('#' + ('0000' + dColor.toString(16)).substr(-6));
-		           
-					if(!(typeof DEVICEADDRESS == 'undefined')){
-						var ble = {
-							address : DEVICEADDRESS,
-							resource : "/peripherals/rgblight",
-							operation : "write",
-							value : ('0000' + dColor.toString(16)).substr(-6)
-						};
-						
-						$.getJSON(url,ble,function(data){
-							console.log(JSON.stringify(data));
-						});
-					}
-		    }); 
-		});
-		</script>
+			        var canvasX = Math.floor(e.pageX - canvasOffset.left);
+			        var canvasY = Math.floor(e.pageY - canvasOffset.top);
+			        var imageData = ctx.getImageData(canvasX, canvasY, 1, 1);
+			        var pixel = imageData.data;
+			        var pixelColor = "rgb("+pixel[0]+", "+pixel[1]+", "+pixel[2]+")";
+			        var dColor = pixel[2] + 256 * pixel[1] + 65536 * pixel[0];
+					$('#hexVal').css('color',' #' + ('0000' + dColor.toString(16)).substr(-6));
+			        $('#hexVal').html(' #' + ('0000' + dColor.toString(16)).substr(-6)+' ');
+					juma.write("/peripherals/rgblight",('0000' + dColor.toString(16)).substr(-6));
+				}); 
+
+			});  
+	    </script>
 	</body>
 </html>

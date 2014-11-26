@@ -1,69 +1,66 @@
+<!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link type="text/css" rel="stylesheet" media="all" href="css/jquery.highlight.css" />
-		<title></title>
-		<script type="text/javascript" src="js/jquery.js"></script>
-		<script type="text/javascript" src="js/jquery.highlight.js"></script>
-		<script type="text/javascript">
-			    $(document).ready(function(){
-					$('pre.code').highlight({source:1, zebra:1, indent:'space', list:'ol'});
-				}); 
-		</script>
-	</head>
-	<body>
-		<div>
-			<div>
-				选择数据来源：<select id="test">
-								<option value="0">真实设备</option>
-								<option value="1">模拟设备</option>
-							</select>
-				<button id="selectDevice">扫描设备</button>
-				<button id="beep">Beep</button>
-			</div>
-		</div>
-		<script type="text/javascript" src="js/selectDevice.js"></script>
-		<script type="text/javascript">
-		
-		var url = '';
-		
-		$(function(){
-			$('#selectDevice').click(function(){
-				selectDevice(function(data){
-					console.log(JSON.stringify(data));
-				});
-			})
-			
-			if($('#test').val()==0){
-				url = 'http://127.0.0.1:8086/ble?callback=?';
-			}else{
-				url = 'http://www.gatt.io:8080/server?callback=?';
-			}
-			
-			$('#test').change(function(){
-				if($('#test').val()==0){
-					url = 'http://127.0.0.1:8086/ble?callback=?';
-				}else{
-					url = 'http://www.gatt.io:8080/server?callback=?';
-				}
-			});
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="css/jquery.mobile.flatui.css" />
+    <title>蜂鸣器</title>
+  </head>
+  <body>
+    <div data-role="page">
 
-		    $('#beep').click(function() { // click event handler
-				if(!(typeof DEVICEADDRESS == 'undefined')){
-					var ble = {
-						address : DEVICEADDRESS,
-						resource : "/peripherals/buzzer",
-						operation : "write",
-						value : "5s"
-					};
-					
-					$.getJSON(url,ble,function(data){
-						console.log(JSON.stringify(data));
-					});
-				}
-		    }); 
-		});
-		</script>
-	</body>
+      <div data-role="panel" id="panel" data-position="right" data-theme="a" data-display="push"></div>
+
+      <div data-role="header">
+        <a data-iconpos="notext" data-role="button" data-icon="home" title="Home">Home</a>
+        <h1>蜂鸣器</h1>
+        <a data-iconpos="notext" href="#panel" data-role="button" data-icon="flat-menu"></a>
+      </div>
+
+      <div data-role="content" role="main">
+        <div>
+          <h1>仿真模式</h1>
+          <p>假设您现在手边还未获得开发板，我们提供了仿真模式来模拟nRF51822 EK TM的行为。启动仿真模式，请打开开关。</p>
+          <select name="mode" id="mode" data-role="slider">
+            <option value="0">OFF</option>
+            <option value="1">ON</option>
+          </select>
+        </div>
+        <div>
+          <h1>扫描蓝牙设备</h1>
+          <p> 请为下面的例子选择一个设备. 
+          如果设备列表没有显示请点击<a id="scan-button" href="#" data-inline="true">刷新</a>.</p>
+		  <div id="device-list">
+         	 Empty List
+		  </div>
+        </div>
+        <div>
+          <h2>蜂鸣器发声</h2>
+          <a id="beep-button" href="#" data-role="button" data-inline="true">Beep</a><span>(点击Beep按钮使蜂鸣器发声)</span>
+        </div>
+      </div>
+      <div data-role="footer">
+        <h1>xudong.chen@jumacc.com</h1>
+      </div>
+
+    </div>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/jquery.mobile-1.3.1.min.js"></script>
+    <script type="text/javascript" src="js/juma.js"></script>
+    <script type="text/javascript">
+		$(function(){
+			$('#mode').change(function(){
+				juma.emulation_mode($(this).val());
+			});
+		
+			$('#scan-button').click(function() {
+				juma.scan('#device-list');
+		    });
+
+			$('#beep-button').click(function() {
+			    juma.write("/peripherals/buzzer","5s");
+			});
+		});  
+    </script>
+  </body>
 </html>
