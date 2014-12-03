@@ -88,7 +88,7 @@
           });
           
           function init(){
-	          DataBase.openDB('bcsphere','','apps',1024*1024);
+	          DataBase.openDB('bcsphere','','apps',1024*1024*2);
 	          DataBase.createTable('apps');
               DataBase.query(function(result){
                     var length = result.rows.length;
