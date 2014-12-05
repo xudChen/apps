@@ -43,7 +43,7 @@ var juma = {
                 var device = devices[i];
                 var name = device.name;
                 var addr = device.address;
-                var rssi = device.RSSI;
+                var rssi = device.rssi;
 
                 html_str += '<label for="device-' + i + '">' + name + ' ' + addr;
                 html_str += ' ' + '</label><input type="radio" name="device" id="device-' + i;
