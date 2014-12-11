@@ -3,29 +3,29 @@
     <head>
      <meta charset="utf-8">
      <!-- If you delete this meta tag World War Z will become a reality -->
-     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+     <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no"> 
      <title></title> 
      <link rel="stylesheet" href="css/normalize.css"> 
      <link rel="stylesheet" href="css/foundation.min.css"> 
      <style type="text/css">
 
          *{
-             -webkit-tap-highlight-color:krgba(255,255,255,0);
+             -webkit-tap-highlight-color:rgba(255,255,255,0);
          }
          
+         body{
+         	background-color: #f5f5f5;
+         }
+
          .row_1 {
             padding:2.5rem 0.8rem;
             overflow-x: hidden;
             overflow-y: auto;
          }
          
-         .new_panel{
-             margin-bottom: 0.5rem;
-             padding: 0.5rem;
-         }
-         
          .p_center{
              text-align: center;
+             padding-top: 0.3rem;
              font-size: 0.55rem;
          }
          
@@ -46,7 +46,7 @@
      <!-- body content here -->
       <div class="row row_1">        
         <div id="addNew" class="large-3 small-3 columns">
-          <img src="img/addNew.png" style="border:1px solid #ccc" >
+          <img src="img/addNew.png" style="background-color:#fff" >
           <div class="new_panel">
 	          <p>&nbsp;</p>
           </div> 
@@ -91,31 +91,31 @@
 	          DataBase.openDB('bcsphere','','apps',1024*1024*2);
 	          DataBase.createTable('apps');
               DataBase.query(function(result){
-                    var length = result.rows.length;
-                    if(isFirstTime){                      
-                       if(length==0){
-                          DataBase.insert(['温度计','temperature.html','img/temperature.png'],function(){
-	                      	DataBase.insert(['调光灯','rgblight.html','img/rgblight.jpg'],function(){
-		                      DataBase.insert(['蜂鸣器','buzzer.html','img/buzzer.jpg'],function(){
-			                      window.localStorage['isFirstTime'] = !isFirstTime;
-								  init();	
-		                      });
-	                      	});
-                          });
-		               }
-                    }
+                        var length = result.rows.length;
+	                    if(isFirstTime){                      
+	                       if(length==0){
+	                          DataBase.insert(['8','温度计','新一代智能温度计','暂缺','img/temperature.png','https://xudChen.github.io/apps/temperature.html','xudong.chen','0.01','1','0','0'],function(){
+		                      	DataBase.insert(['7','蜂鸣器','暂缺','暂缺','img/buzzer.jpg','https://xudChen.github.io/apps/buzzer.html','xudong.chen','0.01','1','0','0'],function(){
+			                      DataBase.insert(['6','调光灯','新一代智能调光灯','暂缺','img/rgblight.jpg','https://xudChen.github.io/apps/rgblight.html','xudong.chen','0.01','1','0','0'],function(){
+				                      window.localStorage['isFirstTime'] = !isFirstTime;
+									  init();	
+			                      });
+		                      	});
+	                          });
+			               }
+	                    }
                     
-					for(var i=0;i<length;i++){
-						var data = result.rows.item(i);
-	                    var app = $('<div class="large-3 small-3 columns">'+
-	                        '<img src="'+data.img+'">'+
-	                        '<div class="new_panel">'+
-	                            '<p class="p_center">'+data.name+'</p>'+
-	                        '</div>'+
-	                        '<div  class="close_btn">'+
-	                            '<img src="img/close_btn.png" />'+
-	                        '</div>'+
-	                      '</div>'
+						for(var i=0;i<length;i++){
+							var data = result.rows.item(i);
+		                    var app = $('<div class="large-3 small-3 columns">'+
+		                        '<img src="'+data.icon_url+'">'+
+		                        '<div class="new_panel">'+
+		                            '<p class="p_center">'+data.name+'</p>'+
+		                        '</div>'+
+		                        '<div  class="close_btn">'+
+		                            '<img src="img/close_btn.png" />'+
+		                        '</div>'+
+		                        '</div>'
 	                    );
 	                    
 	                    (function(i,data){
@@ -123,7 +123,7 @@
 	                        
 	                        img.click(function(event){
 	                            event.stopPropagation();
-	                            location.href= data.address;
+	                            location.href= data.app_url;
 	                        });
 	                        
 	                        var touchEvent_interval=[];

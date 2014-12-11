@@ -1,25 +1,3 @@
-function clone (jsonObj){
-    var buf;
-    if (jsonObj instanceof Array) {
-        buf = [];
-        var i = jsonObj.length;
-        while (i--) {
-            buf[i] = arguments.callee(jsonObj[i]);
-        }
-        return buf;
-    }else if (typeof jsonObj == "function"){
-        return jsonObj;
-    }else if (jsonObj instanceof Object){
-        buf = {};
-        for (var k in jsonObj) {
-            buf[k] = arguments.callee(jsonObj[k]);
-        }
-        return buf;
-    }else{
-        return jsonObj;
-    }
-}
-
 var DataBase = {
 
 	init : function(){
@@ -36,7 +14,7 @@ var DataBase = {
 	
 	createTable : function(name,success,error){
 		this.db.transaction(function(tx){ 
-            tx.executeSql('CREATE TABLE IF NOT EXISTS apps(id integer PRIMARY KEY autoincrement,name nvarchar(1000),address nvarchar(1000),img nvarchar(1000))',[],function(tx,rs){
+            tx.executeSql('CREATE TABLE IF NOT EXISTS apps(id integer PRIMARY KEY autoincrement,appId integer,name nvarchar(100),title nvarchar(200),description nvarchar(1000),icon_url nvarchar(500),app_url nvarchar(500),author nvarchar(100),version double,status nvarchar(10),update_time timestamp,create_time timestamp)',[],function(tx,rs){
 	            if(success)success(rs);
             },function(tx,rs){
 	            if(error)error(rs);
@@ -57,7 +35,7 @@ var DataBase = {
 	insert : function(param,success,error){
 		this.db.transaction(function(tx){
             tx.executeSql(
-            	'INSERT INTO apps (name,address,img) VALUES (?,?,?)',
+            	'INSERT INTO apps (appId,name,title,description,icon_url,app_url,author,version,status,update_time,create_time) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
             	 param,
             	 function(tx,rs){ 
 					 if(success)success(rs); 
@@ -88,7 +66,7 @@ var DataBase = {
 	update : function(param,success,error){
 		this.db.transaction(function (tx) {
 			tx.executeSql(
-				"update stu set name = ?,address=?,img=? where id=?",
+				"update apps set appId = ?,name=?,title=?,description=?,icon_url=?,app_url=?,author=?,version=?,status=?,update_time=?,create_time=? where id=?",
 				param,
 				function (tx, rs) {
 					if(success)suceess(rs);
