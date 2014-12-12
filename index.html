@@ -94,9 +94,9 @@
                         var length = result.rows.length;
 	                    if(isFirstTime){                      
 	                       if(length==0){
-	                          DataBase.insert(['8','温度计','新一代智能温度计','暂缺','img/temperature.png','https://xudChen.github.io/apps/temperature.html','xudong.chen','0.01','1','0','0'],function(){
-		                      	DataBase.insert(['7','蜂鸣器','暂缺','暂缺','img/buzzer.jpg','https://xudChen.github.io/apps/buzzer.html','xudong.chen','0.01','1','0','0'],function(){
-			                      DataBase.insert(['6','调光灯','新一代智能调光灯','暂缺','img/rgblight.jpg','https://xudChen.github.io/apps/rgblight.html','xudong.chen','0.01','1','0','0'],function(){
+	                          DataBase.insert(['8','温度计','新一代智能温度计','暂缺','img/temperature.png','temperature.html','xudong.chen','0.01','1','0','0'],function(){
+		                      	DataBase.insert(['7','蜂鸣器','暂缺','暂缺','img/buzzer.jpg','buzzer.html','xudong.chen','0.01','1','0','0'],function(){
+			                      DataBase.insert(['6','调光灯','新一代智能调光灯','暂缺','img/rgblight.jpg','rgblight.html','xudong.chen','0.01','1','0','0'],function(){
 				                      window.localStorage['isFirstTime'] = !isFirstTime;
 									  init();	
 			                      });
