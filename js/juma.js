@@ -103,7 +103,7 @@ var juma = {
             value : value
         };
         $.getJSON(this.url, params, function(data){
-            console.log(JSON.stringify(data));
+            alert(JSON.stringify(data));
         });
     }
 }
