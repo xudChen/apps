@@ -31,7 +31,6 @@ var juma = {
         $(selector).html("searching");
         
         $.getJSON(this.url,params,function(data){
-            alert(JSON.stringify(data));
             var devices = data['device_list'];
 	    
             if (devices.length == 0) {
